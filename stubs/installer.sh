@@ -46,13 +46,13 @@ cp vimrc "$HOME_1000"/.config/vim/ || exit
 chown -R 1000:1000 "$HOME_1000"/{.bashrc,.bash_profile,.ssh,.config/vim}
 
 sudo cp .bash_profile /root/ || exit
-sudo cp .bashrc /root/ || exit
-sudo mkdir -p /root/.config/vim || exit
+sudo cp .bashrc       /root/ || exit
+sudo mkdir -p /root/.config/vim  || exit
 sudo cp vimrc /root/.config/vim/ || exit
 chown -R root:root /root/{.bashrc,.bash_profile,.config/vim}
 
 sudo chmod 0600 "$HOME_1000"/.ssh/* || exit
-sudo chmod 0700 "$HOME_1000"/.ssh || exit
+sudo chmod 0700 "$HOME_1000"/.ssh   || exit
 
 echo "Managed files were successfully installed."
 echo "Use \`source .bashrc\` or logout and then log back in."
