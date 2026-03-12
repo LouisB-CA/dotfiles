@@ -1,3 +1,6 @@
 ssh/config
 detailed-file-descriptions.md
 project-overview.md
+generate-links.sh
+links.txt
+stub.txt

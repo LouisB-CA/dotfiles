@@ -9,11 +9,20 @@ STUBFILES="${DOTFILES}/stubs"
 USER_1000=$(getent passwd 1000 | cut -d: -f1)   # their username
 HOME_1000=$(getent passwd 1000 | cut -d: -f6)   # their home dir
 
+# Check that user 1000 exists and has home directory
+if [[ -z "$USER_1000} ]] ; then
+    printf "$HEAVY_BALLOT_X No user: user name for UID=1000 not found.\n"
+    exit 1
+elif [[ -z "$HOME_1000} ]] ; then
+    printf "$HEAVY_BALLOT_X No home: home directory for user \'$USER_1000\' not found.\n"
+    exit 2
+fi
+
 # Check that project directory exists
 if  [[ -d "$STUBFILES" ]] ; then
     cd "$STUBFILES"
 else
-    printf "$HEAVY_BALLOT_X Omnibus Project not found."
+    printf "$HEAVY_BALLOT_X Omnibus Project not found.\n"
     exit 1
 fi
 
@@ -43,13 +52,13 @@ cp .bashrc "$HOME_1000"/ || exit
 cp config "$HOME_1000"/.ssh/ || exit
 mkdir -p "$HOME_1000"/.config/vim || exit
 cp vimrc "$HOME_1000"/.config/vim/ || exit
-chown -R 1000:1000 "$HOME_1000"/{.bashrc,.bash_profile,.ssh,.config/vim}
+sudo chown -R 1000:1000 "$HOME_1000"/{.bashrc,.bash_profile,.ssh,.config/vim}
 
 sudo cp .bash_profile /root/ || exit
 sudo cp .bashrc       /root/ || exit
 sudo mkdir -p /root/.config/vim  || exit
 sudo cp vimrc /root/.config/vim/ || exit
-chown -R root:root /root/{.bashrc,.bash_profile,.config/vim}
+sudo chown -R root:root /root/{.bashrc,.bash_profile,.config/vim}
 
 sudo chmod 0600 "$HOME_1000"/.ssh/* || exit
 sudo chmod 0700 "$HOME_1000"/.ssh   || exit

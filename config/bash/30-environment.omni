@@ -21,21 +21,8 @@ HISTFILESIZE=2000
 # tell /usr/bin/less to pass ansi codes through, don't display them as gibbeish
 export LESS="-R --quit-if-one-screen"
 
-# round emojis may require printf to work correctly
-# use for success, failure, warning, info and debug
-declare -x GREEN_CIRCLE="\U1f7e2"
-declare -x RED_CIRCLE="\U1f534"
-declare -x ORANGE_CIRCLE="\U1f7e0"
-declare -x BLUE_CIRCLE="\U1f535"
-declare -x PURPLE_CIRCLE="\U1f7e3"
-
 export MONGOOSE_REPO_PATH="/home/pi/prgms/mongoose"
 
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# Added the following Pico variables on Sat 24 Jun 2023 02:25:45 AM PDT
-# Added the following Pico variables on Fri 14 Jul 2023 02:41:55 AM PDT
-export PICO_SDK_PATH=/home/pi/prgms/pico-sdk
-export PICOTOOL_FETCH_FROM_GIT_PATH=/home/pi/prgms/pico-sdk/build/_deps
 
