@@ -12,33 +12,17 @@
 | config        |    0600    |  ~pi/.ssh/                          |
 
 ## Installation
-* Copy /opt/dotfiles to your RPi device
-* Execute the following bash script on the RPi device
-```bash
-#!/usr/bin/env bash
-unset -f installer
-installer () {
-	cd /opt/dotfiles/
-	chmod 0644 .bash_profile .bashrc vimrc
-	chmod 0600 config
-	cp .bash_profile ~pi/
-	cp .bash_profile /root/
-	cp .bashrc ~pi/
-	cp .bashrc ~/root/
-	mkdir -p ~pi/.config/vim
-	cp vimrc ~pi/.config/vim/
-	mkdir -p /root/.config/vim
-	cp vimrc /root/.config/vim/
-	cp config ~pi/.ssh/
-	chown -R pi:pi ~pi/
-	chown -R root:root /root/
-	chmod 0600 ~pi/.ssh/*
-	chmod 0700 ~pi/.ssh
-}
-sudo installer
-unset -f installer
-```
+* Stub files are installed once in the user's home directory
+* An installer script is provided to facillitate installation
+* *install.sh* will overwrite existing files of the same name
+
 ## Changing Your System Configuration
 * If you need to change a configuration, you are in the wrong place!
 * See the appropriate README.md.
+
+## Applications that Change Your Configuration
+* Some aaplications have installers that modify your *.bashrc* and *.bash_profile*
+* Examples include the Pico SDK for RPi and *juliaup*
+* These app-changes must be incorporated into the Omni Project as host-specific changes
+* See the regular docs/ for detals on host-specific changes
 
