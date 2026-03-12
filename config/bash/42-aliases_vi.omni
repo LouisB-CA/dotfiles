@@ -1,0 +1,34 @@
+
+# ~/.config/bash/42-aliases-vi.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# This config file is for aliases only of the `vim` command
+
+#
+# To use this alias on raspios, you must have 
+#   first executed `sudo apt install --yes vim`
+#
+# On fedora, vim is installed by default
+#
+# `command -v vim` should produce output, but not an alias.
+# `command vim --version | grep -iE 'big|huge|tiny' should
+# produce "big" or "huge", but NOT "tiny"
+#
+
+unalias vi vim  2> /dev/null
+unset -f vi
+
+_cmd=$(command -v vim)
+if [[ -z $_cmd ]]; then
+    vi() { printf "[${BOLDRED}${HEAVY_BALLOT_X}${NOCOLOR}] "
+			echo "vim not found, vi is unaliased"
+			echo "    first install vim, then \`source ~/.bashrc\`"
+			echo "    meanwhile, use the workaround \`command vi $@\`"
+	}
+else
+    alias vi="$_cmd"
+fi
+
+unset _cmd
+

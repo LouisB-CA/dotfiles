@@ -1,0 +1,27 @@
+
+# ~/.config/bash/70-local.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# see ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# Machine-specific config dispatcher.
+#
+# Files named  <hostname>_*.omni in this directory are sourced only on the
+# machine whose hostname matches.  All other RPis silently skip them.
+# This file itself runs on every RPi — it is the dispatcher, not the config.
+#
+# Example:
+#   myRPi4_pico_sdk.omni   → sourced only when hostname -s == myRPi4
+#   myRPi3_baseline.omni   → sourced only when hostname -s == myRPi3
+#
+# To add config for a new machine, create  <hostname>_<description>.omni
+# No edits to this file or to .bashrc are required.
+
+_host="$(hostname -s)"
+_dir="/opt/dotfiles/config/bash"
+
+for f in "$_dir/${_host}"_*.omni; do
+    [ -r "$f" ] && source "$f"
+done
+
+unset _host _dir f
+

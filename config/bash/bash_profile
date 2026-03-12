@@ -1,0 +1,16 @@
+# ~/.bash_profile: executed by bash(1) for login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# For login shells, when ~/.bash_profile exists, only ~/.bash_profile is
+# automatically executed, even if login shell is also interactive.
+
+# For non-login, interactive shells, .bashrc is run, if it exists.
+
+# determine whether invoked by SSHD, run .bashrc if yes
+if [ "x$(ps --pid=$PPID -ocmd | tail -1 | cut -c1-4)" == xsshd ] ; then
+    if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
+fi
+
+#=!=!=!=!=! DO NOT EDIT ABOVE THIS LINE.  BELOW THIS, IT'S UNMANAGED
+

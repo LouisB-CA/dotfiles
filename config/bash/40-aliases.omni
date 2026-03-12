@@ -1,0 +1,19 @@
+
+# ~/.config/bash/40-aliases.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+alias grepvideo="grep -E '.avi$|.cue$|.divx$|.dvi$|.flv$|.img$|.iso$|.m4v$|.mkv$|.mp4$|.mpeg$|.mpg$|.mpg4$|.wmv$|.VOB$|.webm$'"
+
+alias less='/bin/less -x 4'
+alias pgrep='/usr/bin/pgrep -fa'
+alias vi="TERM=xterm /usr/bin/vi"
+
+# this `clean` command clears the screen and the scrollback buffer
+alias clean="clear && printf '\e[3J'"
+
+alias temp='/usr/bin/vcgencmd measure_temp'
+
+# should this be a function?
+alias pico_reset=$HOME/prgms/pico_reset.sh
+

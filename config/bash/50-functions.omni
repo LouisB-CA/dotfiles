@@ -1,0 +1,91 @@
+
+# ~/.config/bash/50-functions.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# see ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# Note:  use of function keyword is deprecated for POSIX portability
+
+unset -f rvbfunc ; unalias rvbfunc 2> /dev/null
+rvbfunc() { 
+	# check that exactly 1 argument was given
+	if [ $# != 1 ] ; then		# expect exactly one argument
+		echo "Usage:  $0  video-file-name"
+		return
+	fi
+
+	# check that the argument expands into exactly one file or directory name
+	FNAME=$(/bin/ls "$1")
+	echo "$FNAME"
+	if [ $(echo $FNAME | wc -l) != 1 ] ; then
+		echo "Usage:  $0  video-file-name"
+		return
+	fi
+
+	# check that the name is a file and is readable
+	if [ -f "$FNAME" ] && [ -r "$FNAME" ] ; then
+		PREFIX="${FNAME%.*}"
+		EXTENSION="${FNAME#$PREFIX}"
+	else
+		echo "$0: cannot find/read file $1"
+		return
+	fi
+	echo "$1"
+	## echo $PREFIX
+	## echo $EXTENSION
+
+	if [ "x$EXTENSION" == x.mp4 ] ; then	# expect any extension except .mp4
+		echo "cannot convert MP4 file to MP4"
+		return
+	fi
+	
+	# create output file name and run ffmpeg at about 60% cpu, to prevent cpu overheating
+	OUTFILE=$(basename "$PREFIX").mp4;
+	## echo $OUTFILE
+	if which cpulimit ; then		# which returns 0 (true) if the cpulimit command is found
+		cpulimit -l 160 -- ffmpeg -i "$1" -c:v libx265 -crf 28 -c:a copy -y "$OUTFILE"
+	else
+		ffmpeg -i "$1" -c:v libx265 -crf 28 -c:a copy -y "$OUTFILE"
+	fi
+}
+
+unset -f cd
+function cd () {
+	local hnum=16;
+	local new_dir index dir cnt;
+	if ! [ $# -eq 0 ]; then
+		if [[ $# -eq 2 && $1 = "--" ]]; then
+			shift;
+		else
+			if ! { 
+				[ $# -eq 1 ] && [[ $1 =~ ^(-[0-9]{,2}|-|--|[^-].*)$ ]]
+			}; then
+				builtin cd "$@";
+				return;
+			fi;
+		fi;
+	fi;
+	[ "$1" = "--" ] && { 
+		dirs -v;
+		return
+	};
+	new_dir=${1:-$HOME};
+	if [[ "$new_dir" =~ ^-[0-9]{,2}$ ]]; then
+		index=${new_dir:1};
+		if [ -z "$index" ]; then
+			new_dir=$OLDPWD;
+		else
+			new_dir=$(dirs -l +$index) || return;
+		fi;
+	fi;
+	pushd -- "$new_dir" > /dev/null || return;
+	popd -n +$hnum &> /dev/null || true;
+	new_dir=$PWD cnt=1;
+	while dir=$(dirs -l +$cnt 2> /dev/null); do
+		if [ "$dir" = "$new_dir" ]; then
+			popd -n +$cnt > /dev/null;
+			continue;
+		fi;
+		let cnt++;
+	done
+}
+

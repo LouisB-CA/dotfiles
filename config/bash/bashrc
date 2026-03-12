@@ -1,0 +1,33 @@
+
+# ~/.config/bash/bashrc: original copy of ~/.bashrc
+# Contents of this file are managed by the Omnibus Project.
+# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# at this point, /etc/profile will will have been executed
+# See the INVOCATION section of man bash for details
+
+# Non-interactive shell guard — do not remove
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# ── Omibus bash config ────────────────────────────────────────────────────
+# All configuration lives in ~/.config/bash/
+# Files matching [0-9][0-9]*.omni are sourced in lexical order.
+# Machine-specific files are dispatched by 70-local.omni via hostname.
+# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+_dir="/opt/dotfiles/config/bash"
+if [ -d ${_dir} ]; then
+    for f in ${_dir}/[0-9][0-9]*.omni; do
+        [ -r "$f" ] && source "$f"
+    done
+    unset f
+fi
+unset _dir
+
+# ── DO NOT EDIT ABOVE THIS LINE ───────────────────────────────────────────
+# Lines below this boundary are managed by package installers.
+# Periodically review, migrate clean items to ~/.config/bash/, then delete.
+

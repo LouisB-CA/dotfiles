@@ -1,0 +1,52 @@
+
+# ~/.config/bash/60-prompt.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# see ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# The only effects of this script should be to the PS0, PS1 and PS2 variables
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+#
+# N.B. -- this prompt conforms with special exception for bash prompts as described
+# in https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux,
+# begin each non-printing sequence with \[ and end it with \].  The colors are non-printing.
+# See the bash man page for all escape codes.
+export PS0=
+if [ x$BLUE == x ] ; then
+	PS1="[\u@\h \W]\# "		# this is the default, used if the colors are not defined
+else
+	# this one is wrong.  it is unaware of the exception.
+	PS1=${BOLDBLUE}"[\u@\W]"${BOLDCYAN}"\#"${NOCOLOR}"# "		# unaware of the exception
+
+	# this one is RaspiOS default
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w \$\[\033[00m\] '
+
+	# this one is good for user pi
+	PS1="\["${BOLDBLUE}"\][\u@\W]\["${BOLDCYAN}"\]\#\]"${NOCOLOR}"\]# "	# begin color sequence with \[ and end it with \]
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\][\u@\h:\W]\n\[\033[01;34m\]\#\[\033[00m\]# '
+
+# this one is good for either pi or root
+	if [ "$EUID" -eq 0 ]; then
+		open_char="${BOLDRED}< "
+		user_color="$BOLDRED"
+		close_char="${BOLDRED} >"
+		user_char="$"
+	else
+		open_char="${BOLDBLUE}[ "
+		user_color="$BOLDGREEN"
+		close_char="${BOLDBLUE} ]"
+		user_char="#"
+	fi
+	PS1="\[${open_char}\]\[${user_color}\]\u@\h:\W\[${close_char}\]\n"
+	PS1+="\[${BOLDCYAN}\]\#\[${NOCOLOR}\]${user_char} "
+
+fi
+export PS1
+export PS2="> "
+
+unset debian_chroot user_char close_char user_color open_char
+

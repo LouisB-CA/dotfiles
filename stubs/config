@@ -1,0 +1,6 @@
+
+# ~/.ssh/config: This stub file is managed by the Omnibus Project
+# See /opt/dotfiles/README.md
+
+Include /opt/dotfiles/ssh/config
+

@@ -1,0 +1,26 @@
+
+# ~/.config/bash/42-aliases-ls.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# This config file is for aliases only of the `ls` command
+
+unalias ls l la ll l. l.l lw lwa lww 2> /dev/null
+
+_cmd=$(command -v ls)
+[[ -z $_cmd ]] && return
+
+alias l="${_cmd}   --color=auto -l"
+alias la="${_cmd}  --color=auto -lLAX"
+alias ll="${_cmd}  --color=auto -lLX"
+alias l.="${_cmd}  --color=auto -1 -d .* 2>/dev/null"
+alias l.l="${_cmd} --color=auto -1 -dl .??* 2>/dev/null"
+alias lw="${_cmd}  --color=auto -w 80"
+alias lwa="${_cmd} --color=auto -Aw 80"
+alias lww="${_cmd} --color=auto -w 100"
+
+# Note if you don't want single column output, use e.g. -w 80, say,
+# to put the output in columns with a *total* width of 80 columns
+
+unset _cmd
+

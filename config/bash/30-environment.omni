@@ -1,0 +1,41 @@
+
+# ~/.config/bash/30-environment.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# see ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# N.B. environment variable PATH and prompt variables PS1, PS2 have their own
+# dedicated omnibus files
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=1000
+HISTFILESIZE=2000
+
+# make less more friendly for non-text input files, see lesspipe(1)
+# this command sets and exports LESSOPEN and LESSCLOSE variables
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# tell /usr/bin/less to pass ansi codes through, don't display them as gibbeish
+export LESS="-R --quit-if-one-screen"
+
+# round emojis may require printf to work correctly
+# use for success, failure, warning, info and debug
+declare -x GREEN_CIRCLE="\U1f7e2"
+declare -x RED_CIRCLE="\U1f534"
+declare -x ORANGE_CIRCLE="\U1f7e0"
+declare -x BLUE_CIRCLE="\U1f535"
+declare -x PURPLE_CIRCLE="\U1f7e3"
+
+export MONGOOSE_REPO_PATH="/home/pi/prgms/mongoose"
+
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# Added the following Pico variables on Sat 24 Jun 2023 02:25:45 AM PDT
+# Added the following Pico variables on Fri 14 Jul 2023 02:41:55 AM PDT
+export PICO_SDK_PATH=/home/pi/prgms/pico-sdk
+export PICOTOOL_FETCH_FROM_GIT_PATH=/home/pi/prgms/pico-sdk/build/_deps
+

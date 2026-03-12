@@ -1,0 +1,23 @@
+
+# ~/.config/bash/34-special-chars.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# these may require printf to work correctly
+# ----------------------------------
+declare -x HEAVY_CHECK_MARK="\U2714"
+declare -x HEAVY_BALLOT_X="\U2718"
+declare -x CROSS_MARK="\U274C"
+declare -x CHECK_GREEN_BKGD="\U00002705"
+
+declare -x SOLIDUS="\U29f8"
+declare -x EM_DASH="\U2014"
+
+# use for success, failure, warning, info and debug
+declare -x GREEN_CIRCLE="\U1f7e2"
+declare -x RED_CIRCLE="\U1f534"
+declare -x ORANGE_CIRCLE="\U1f7e0"
+declare -x BLUE_CIRCLE="\U1f535"
+declare -x PURPLE_CIRCLE="\U1f7e3"
+# ----------------------------------
+

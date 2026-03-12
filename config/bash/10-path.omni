@@ -1,0 +1,15 @@
+
+# ~/.config/bash/10-path.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# see ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+# User specific path variable
+if ! [[ ":$PATH:" =~ ":$HOME/.local/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+export PATH
+
+# This line removes the references to "games" directories in the PATH
+PATH=$(echo "$PATH" | tr ':' '\n' | grep -v 'games' | tr '\n' ':' | sed 's/:$//')
+

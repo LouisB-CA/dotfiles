@@ -1,0 +1,25 @@
+
+" set tabstop=2 expandtab   " expand tabs into spaces (use noexpandtab to prevent this)
+:filetype on
+set nohlsearch
+set title
+set viminfo=      " tell vim *not* to keep a history file; default is to use ~/.viminfo
+
+" Basic compatibility
+set nocompatible
+
+" General indentation settings
+set tabstop=4        " Display width of tab characters
+set shiftwidth=4     " Number of spaces for autoindent
+set softtabstop=4    " Number of spaces when pressing Tab
+
+" For programming files, use spaces instead of tabs
+autocmd FileType python,c,cpp,java,javascript,ruby,rust,perl,sh setlocal expandtab
+
+" Convert existing tabs to spaces when opening Python files
+autocmd BufReadPost *.py retab
+
+" Optional: Show whitespace characters to see tabs vs spaces
+" Uncomment the next line if you want to visualize tabs and spaces
+set list listchars=tab:→\ ,trail:·,extends:>,precedes:<
+
