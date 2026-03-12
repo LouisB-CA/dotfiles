@@ -1,0 +1,6 @@
+
+# Added the following Pico variables on Sat 24 Jun 2023 02:25:45 AM PDT
+# Added the following Pico variables on Fri 14 Jul 2023 02:41:55 AM PDT
+export PICO_SDK_PATH=/home/pi/prgms/pico-sdk
+export PICOTOOL_FETCH_FROM_GIT_PATH=/home/pi/prgms/pico-sdk/build/_deps
+
