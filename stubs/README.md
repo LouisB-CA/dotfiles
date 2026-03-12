@@ -6,10 +6,10 @@
 
 | stub file     | permission | installation directory |
 |---------------|------------|------------------------|
-| .bash_profile |    0644    |  ~pi/, /root/                       |
-| .bashrc       |    0644    |  ~pi/, /root/                       |
-| vimrc         |    0644    |  ~pi/config/vim/, /root/config/vim/ |
-| config        |    0600    |  ~pi/.ssh/                          |
+| .bash_profile |    0644    |  ~pi/, /root/                         |
+| .bashrc       |    0644    |  ~pi/, /root/                         |
+| vimrc         |    0644    |  ~pi/.config/vim/, /root/.config/vim/ |
+| config        |    0600    |  ~pi/.ssh/                            |
 
 ## Installation
 * Stub files are installed once in the user's home directory

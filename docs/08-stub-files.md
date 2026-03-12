@@ -1,5 +1,6 @@
 # Adding a New Device
 
+
 ## Before You Start
 The repo must already be cloned to `/opt/dotfiles` on the new device.
 If it isn't, clone it first:
