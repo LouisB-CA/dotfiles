@@ -17,7 +17,7 @@
 # No edits to this file or to .bashrc are required.
 
 _host="$(hostname -s)"
-_dir="/opt/dotfiles/config/bash"
+_dir="$DOTFILES/config/bash"
 
 for f in "$_dir/${_host}"_*.omni; do
     [ -r "$f" ] && source "$f"

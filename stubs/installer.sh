@@ -3,7 +3,7 @@
 # Install the 4 stub files from the Omnibus Project
 # to the UID=1000 user and the superuser (root)
 
-DOTFILES="/opt/dotfiles"
+DOTFILES="${DOTFILES:-/opt/dotfiles}"
 STUBFILES="${DOTFILES}/stubs"
 # get the username and home directory of the UID=1000 user
 USER_1000=$(getent passwd 1000 | cut -d: -f1)   # their username

@@ -1,6 +1,5 @@
 # Adding a New Device
 
-
 ## Before You Start
 The repo must already be cloned to `/opt/dotfiles` on the new device.
 If it isn't, clone it first:
@@ -17,7 +16,7 @@ See `docs/05-vim.md`.
 The installer copies the four stub files to their correct locations
 for all users and sets the correct permissions.
 ```bash
-cd /opt/dotfiles/stubs
+cd "$DOTFILES/stubs"
 sudo bash installer.sh
 ```
 
@@ -35,18 +34,18 @@ echo $LESS         # should show -R --quit-if-one-screen
 If this device needs configuration that other devices don't — SDK paths,
 GPIO tools, project-specific variables — create a host-specific omni file:
 ```bash
-vim /opt/dotfiles/config/bash/$(hostname -s)_description.omni
+vim "$DOTFILES/config/bash/$(hostname -s)_description.omni"
 ```
 
 Test the new file in isolation before committing:
 ```bash
-source /opt/dotfiles/config/bash/$(hostname -s)_description.omni
+source "$DOTFILES/config/bash/$(hostname -s)_description.omni"
 ```
 
 Then commit and push so the file is available on all devices
 (it will be silently ignored on devices whose hostname doesn't match):
 ```bash
-cd /opt/dotfiles
+cd "$DOTFILES"
 git add config/bash/$(hostname -s)_description.omni
 git commit -m "Add description config for $(hostname -s)"
 git push

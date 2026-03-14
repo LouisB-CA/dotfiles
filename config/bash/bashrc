@@ -18,7 +18,7 @@ esac
 # Machine-specific files are dispatched by 70-local.omni via hostname.
 # See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
 
-_dir="/opt/dotfiles/config/bash"
+_dir="$DOTFILES/config/bash"
 if [ -d ${_dir} ]; then
     for f in ${_dir}/[0-9][0-9]*.omni; do
         [ -r "$f" ] && source "$f"

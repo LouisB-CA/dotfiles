@@ -71,8 +71,8 @@ git rm --cached -r <folder>     # stop tracking a whole folder
 
 ### Clone the repo to a new device (do this once per device)
 ```bash
-git clone https://github.com/yourname/yourrepo.git /opt/dotfiles
-chown -R 1000:1000 /opt/dotfiles
+git clone https://github.com/yourname/yourrepo.git "$DOTFILES"
+chown -R 1000:1000 "$DOTFILES"
 ```
 
 ### Sync workflow — on the device where you made changes
