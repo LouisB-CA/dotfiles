@@ -7,7 +7,7 @@
   - One 52-media.omni for functions that build on ffmpeg, ffprobe, etc
   - One 52-bash.omni for functions like cd() and snip()
 
-* Installer debris workflow (what to do when an app modifies .bashrc) — belongs in 04-config.md, which already covers the omni files and the "DO NOT EDIT" boundary. A short "Handling Installer Additions" section fits naturally there.
+* App installer debris workflow (what to do when an app modifies .bashrc) — belongs in 04-config.md, which already covers the omni files and the "DO NOT EDIT" boundary. A short "Handling Installer Additions" section fits naturally there.
 
 * Keeping devices in sync (git pull / rsync workflow) — not covered anywhere in the numbered docs yet. This belongs in 08 or 09 depending on how you want to sequence things.
 
@@ -15,6 +15,8 @@
 
 * Design principles — the brief list in project-overview.md is good. Could append a short "Design Principles" section to 01-overview.md.
 
+* Review the files *detailed-file-descriptions.md* *project-overview.md* to see if there's
+anything useful, or even still relevant, in them.  If they are OBE, delete them.
 
 
 ## Nice to Have
