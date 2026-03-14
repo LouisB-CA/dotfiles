@@ -10,7 +10,7 @@ USER_1000=$(getent passwd 1000 | cut -d: -f1)   # their username
 HOME_1000=$(getent passwd 1000 | cut -d: -f6)   # their home dir
 
 # Check that user 1000 exists and has home directory
-if [[ -z "$USER_1000} ]] ; then
+if [[ -z "$USER_1000" ]] ; then
     printf "$HEAVY_BALLOT_X No user: user name for UID=1000 not found.\n"
     exit 1
 elif [[ -z "$HOME_1000} ]] ; then
