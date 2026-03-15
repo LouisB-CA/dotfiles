@@ -18,6 +18,30 @@
 * Review the files *detailed-file-descriptions.md* *project-overview.md* to see if there's
 anything useful, or even still relevant, in them.  If they are OBE, delete them.
 
+* Add ~/.gitconfig to the project.  Make ~/.gitconfig a stub file with these contents
+```git
+# ~/.gitconfig
+[include]
+    path = "$DOTFILES/config/git/gitconfig"
+```
+and create a "$DOTFILES/config/git/gitconfig" with these contents
+```git
+[user]
+	name = LouisB-CA
+	email = 40744052+LouisB-CA@users.noreply.github.com
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[init]
+	defaultBranch = main
+```
+But, this approach creates another stub that may be modified by day-to-day use of git.
+So, the user will have to remove the debris from the stub file "~/.gitconfig" 
+and put is in the project file "$DOTFILES/config/git/gitconfig"
+
 
 ## Nice to Have
 
