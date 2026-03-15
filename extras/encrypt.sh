@@ -8,7 +8,7 @@
 IN_FILE="${DOTFILES}/ssh/config"
 
 echo "Encrypting ${IN_FILE}"
-age -e 					\
+age --encrypt				\
     -i ~/.config/age/omnibus.ident 	\
     -o "${IN_FILE}.age"			\
     "${IN_FILE}"

@@ -8,7 +8,7 @@
 OUT_FILE="${DOTFILES}/ssh/config"
 
 echo "Decrypting ${OUT_FILE}.age"
-age -e 					\
+age --decrypt				\
     -i ~/.config/age/omnibus.ident 	\
     -o "${OUT_FILE}"			\
     "${OUT_FILE}.age"
