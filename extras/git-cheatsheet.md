@@ -33,6 +33,12 @@ git commit -a -m "message"      # stage all modified tracked files and commit
 git push                # push commits to remote
 ```
 
+## Rolling Back
+```bash
+git reset --hard HEAD   # throw out all changes
+git pull
+```
+
 ## Checking and Fixing .gitignore
 
 ```bash
@@ -71,7 +77,7 @@ git rm --cached -r <folder>     # stop tracking a whole folder
 
 ### Clone the repo to a new device (do this once per device)
 ```bash
-git clone https://github.com/yourname/yourrepo.git "$DOTFILES"
+git clone https://github.com/LouisB-CA/dotfiles.git "$DOTFILES"
 chown -R 1000:1000 "$DOTFILES"
 ```
 

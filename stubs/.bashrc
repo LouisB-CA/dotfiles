@@ -1,7 +1,7 @@
 # ~/bashrc: This stub file is managed by the Omnibus Project.
 # See /opt/dotfiles/README.md
 
-DOTFILES="${DOTFILES:-/opt/dotfiles}"
+export DOTFILES="${DOTFILES:-/opt/dotfiles}"
 source "$DOTFILES/config/bash/bashrc"
 
 # Lines below the DO NOT EDIT boundary are managed by package installers.
