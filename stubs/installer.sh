@@ -99,9 +99,7 @@ copy_or_fail() {
 	# try to copy the file to the directory
 	# provide error message on failure
 
-	if cp "$1" "$2"/ ; then
-		true
-	else
+	if ! envsubst '$OMNIBUS_HOME' < "${1}" > "${2}/${1}" ; then
 		printf "$FAIL failed to copy file \"${1}\" to directory \"$2\"\n"
 		exit 7
 	fi
