@@ -1,5 +1,5 @@
 " ~/.config/vimrc: This stub file is managed by the Omnibus Project.
 " See ${OMNIBUS_HOME}/README.md
 
-source "$OMNIBUS_HOME/config/vim/vimrc"
+source $OMNIBUS_HOME/config/vim/vimrc
 
