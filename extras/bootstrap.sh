@@ -4,7 +4,13 @@
 # bootstrap for new device / fresh OS
 #
 
-DOTFILES="${DOTFILES:-/opt/dotfiles}"
+# check that OMNIBUS_HOME and/or DOTFILES are being used correctly
+# before you try to actually execute this script.
+echo "This script may be obsolete or broken: do not trust it"
+exit
+
+
+OMNIBUS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if [[ "$EUID" -eq 1000]] ; then
     USER_1000=$(getent passwd 1000 | cut -d: -f1)   # username for plain user
 else
@@ -47,7 +53,7 @@ if ! [ -e ~/.gitconfig ] ; then
 fi
 
 # FIT 3 -- Clone the repo
-sudo git clone https://github.com/LouisB-CA/dotfiles.git /opt/dotfiles
+sudo git clone https://github.com/LouisB-CA/dotfiles.git "$DOTFILES"
 sudo chown -R 1000:1000 "$DOTFILES"
 
 # FIT 4 --

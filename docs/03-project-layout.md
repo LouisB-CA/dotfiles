@@ -11,6 +11,16 @@
 └── README.md
 ```
 
+## The `/opt/dotfiles` Directory
+The documentation assumes a project folder named /opt/dotfiles,
+but the project can be installed elsewhere.  /opt/dotfiles is like
+a default name, but is not the required name.  There is no required
+project folder name.
+
+The project exports an environment variable, DOTFILES, which gives
+the true name of the project folder.  Scripts, etc, that need the
+project folder name should use $DOTFILES.
+
 ## The `config/` Directory
 Contains all configuration files sourced by the stub files.
 The `bash/` subdirectory contains the omni files and the bash stubs.

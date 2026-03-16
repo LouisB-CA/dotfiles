@@ -1,6 +1,12 @@
 
 # ~/.ssh/config: This stub file is managed by the Omnibus Project
-# See /opt/dotfiles/README.md
+# See ${OMNIBUS_HOME}/README.md
 
-Include "$DOTFILES/ssh/config"
+Include "${OMNIBUS_HOME}/ssh/config"
+
+# Any lines below the DO NOT EDIT boundary may have been inserted
+# by various apps, e.g. VScode.
+# Periodically review the items below and migrate the clean items from below
+# to ${OMNIBUS_HOME}/ssh/config file, then delete them from below.
+# ── DO NOT EDIT ABOVE THIS LINE ───────────────────────────────────────────
 

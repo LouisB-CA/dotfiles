@@ -1,11 +1,11 @@
 # Adding a New Device
 
 ## Before You Start
-The repo must already be cloned to `/opt/dotfiles` on the new device.
+The repo must already be cloned to $DOTFILES on the new device.
 If it isn't, clone it first:
 ```bash
-git clone https://github.com/LouisB-CA/dotfiles.git /opt/dotfiles
-chown -R 1000:1000 /opt/dotfiles
+git clone https://github.com/LouisB-CA/dotfiles.git $DOTFILES
+chown -R 1000:1000 $DOTFILES
 ```
 
 ## Step 1 — Install vim

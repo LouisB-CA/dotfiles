@@ -1,11 +1,11 @@
 # ~/bashrc: This stub file is managed by the Omnibus Project.
-# See /opt/dotfiles/README.md
+# See ${OMNIBUS_HOME}/README.md
 
-export DOTFILES="${DOTFILES:-/opt/dotfiles}"
+export DOTFILES="${OMNIBUS_HOME}"
 source "$DOTFILES/config/bash/bashrc"
 
 # Lines below the DO NOT EDIT boundary are managed by package installers.
 # Periodically review the items below and migrate the clean items from below
-# to /opt/dotfiles/config/bash/, then delete them from below.
+# to ${OMNIBUS_HOME}/config/bash/, then delete them from below.
 # ── DO NOT EDIT ABOVE THIS LINE ───────────────────────────────────────────
 

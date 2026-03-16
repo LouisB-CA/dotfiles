@@ -10,25 +10,28 @@ sudo apt install git vim -y       # Debian/Trixie
 sudo dnf install git vim -y       # Fedora
 ```
 
-## Step 2 — Clone the Repo
+## Step 2 -  Choose a Project Folder
 ```bash
-git clone https://github.com/LouisB-CA/dotfiles.git /opt/dotfiles
-sudo chown -R 1000:1000 /opt/dotfiles
+DOTFILES=/opt/dotfiles
 ```
 
-## Step 3 — Run the Installer
+## Step 3 — Clone the Repo
 ```bash
-cd /opt/dotfiles/stubs
-sudo bash installer.sh
+git clone https://github.com/LouisB-CA/dotfiles.git "${DOTFILES}"
+sudo chown -R 1000:1000 "${DOTFILES}"
 ```
 
-## Step 4 — Restore SSH Keys
+## Step 4 — Run the Installer
+```bash
+cd "${DOTFILES}/stubs"
+sudo installer.sh
+```
+
+## Step 5 — Restore SSH Keys
 SSH keys are not in the repo and must be restored separately.
 See `docs/06-ssh.md`.
 
-## Step 5 — Restore Host-Specific Configuration
-If this device had host-specific omni files, they are already in the repo
+## Step 6 — Restore Host-Specific Configuration
+If this device has host-specific omni files, they are already in the repo
 and will be active immediately after cloning. No extra steps needed.
-
-
 
