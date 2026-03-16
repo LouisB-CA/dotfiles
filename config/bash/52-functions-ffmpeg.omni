@@ -1,0 +1,53 @@
+
+# ~/.config/bash/52-functions-ffmpeg.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# See your ~/.bashrc file for the location of the README.md for this file
+
+# Note:  use of function keyword is deprecated for POSIX portability
+
+unset -f rvbfunc ; unalias rvbfunc 2> /dev/null
+rvbfunc() { 
+	# Reduce Video Better -- try to reduce the size of a video file
+	# using ffmpeg
+
+	# check that exactly 1 argument was given
+	if [ $# != 1 ] ; then		# expect exactly one argument
+		echo "Usage:  $0  video-file-name"
+		return
+	fi
+
+	# check that the argument expands into exactly one file or directory name
+	FNAME=$(/bin/ls "$1")
+	echo "$FNAME"
+	if [ $(echo $FNAME | wc -l) != 1 ] ; then
+		echo "Usage:  $0  video-file-name"
+		return
+	fi
+
+	# check that the name is a file and is readable
+	if [ -f "$FNAME" ] && [ -r "$FNAME" ] ; then
+		PREFIX="${FNAME%.*}"
+		EXTENSION="${FNAME#$PREFIX}"
+	else
+		echo "$0: cannot find/read file $1"
+		return
+	fi
+	echo "$1"
+	## echo $PREFIX
+	## echo $EXTENSION
+
+	if [ "x$EXTENSION" == x.mp4 ] ; then	# expect any extension except .mp4
+		echo "cannot convert MP4 file to MP4"
+		return
+	fi
+	
+	# create output file name and run ffmpeg at about 60% cpu, to prevent cpu overheating
+	OUTFILE=$(basename "$PREFIX").mp4;
+	## echo $OUTFILE
+	if which cpulimit ; then		# which returns 0 (true) if the cpulimit command is found
+		cpulimit -l 160 -- ffmpeg -i "$1" -c:v libx265 -crf 28 -c:a copy -y "$OUTFILE"
+	else
+		ffmpeg -i "$1" -c:v libx265 -crf 28 -c:a copy -y "$OUTFILE"
+	fi
+}
+

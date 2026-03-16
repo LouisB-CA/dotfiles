@@ -7,6 +7,10 @@
   - One 52-media.omni for functions that build on ffmpeg, ffprobe, etc
   - One 52-bash.omni for functions like cd() and snip()
 
+* Use `age-keygen` command's post-quantum encryption, when it becomes
+available on raspios 13 trixie.  `age-keygen` v 1.2.1 on raspios 13
+does not have the -pq option, but `age-keygen` 1.3.1 on Fedoras does.
+
 * App installer debris workflow (what to do when an app modifies .bashrc) — belongs in 04-config.md, which already covers the omni files and the "DO NOT EDIT" boundary. A short "Handling Installer Additions" section fits naturally there.
 
 * Keeping devices in sync (git pull / rsync workflow) — not covered anywhere in the numbered docs yet. This belongs in 08 or 09 depending on how you want to sequence things.

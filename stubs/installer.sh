@@ -54,11 +54,12 @@ if [[ -n "$NOT_OWNED" ]]; then
 fi
 
 # Check that the stub files exist
+cd "$STUBFILE_DIR"
 if  ! [[ -r .bashrc ]] || \
     ! [[ -r .bash_profile ]] || \
     ! [[ -r config ]] || \
     ! [[ -r vimrc ]] ; then
-    echo "$FAIL Stub file(s) not found"
+    printf "$FAIL Stub file(s) not found\n"
     exit 5
 fi
 
@@ -106,15 +107,15 @@ copy_or_fail() {
 }
 
 # Finally, perform the installation
-cd "$STUBFILE_DIR"
 chmod 0644 .bash_profile .bashrc vimrc
 chmod 0600 config
 
 mkdir -p "$HOME_1000"/.config/vim
 copy_or_fail .bash_profile "$HOME_1000"
 copy_or_fail .bashrc       "$HOME_1000"
-copy_or_fail vimrc         "$HOME_1000"/.config/vim
+copy_or_fail vimrc         "${HOME_1000}/.config/vim"
 chown -R 1000:1000 "$HOME_1000"/{.bashrc,.bash_profile,.ssh,.config/vim}
+chmod 0644 "$HOME_1000"/.config/vim/vimrc
 
 mkdir -p /root/.config/vim
 copy_or_fail .bash_profile /root
