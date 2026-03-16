@@ -62,7 +62,7 @@ if  ! [[ -r .bashrc ]] || \
     exit 5
 fi
 
-printf "$OKAY Installing stub files for root and for user $USER_1000 on host $(hostname)\n"
+printf "$OKAY Installing stub files for root and for user $USER_1000 on host $(hostname -s)\n"
 
 # define the installation functions
 unset -f ssh_config_installer
