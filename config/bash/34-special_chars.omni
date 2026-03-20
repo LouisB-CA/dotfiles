@@ -9,7 +9,7 @@ declare -x HEAVY_CHECK_MARK="\U2714"
 declare -x HEAVY_BALLOT_X="\U2718"
 declare -x CROSS_MARK="\U274C"
 declare -x CHECK_GREEN_BKGD="\U00002705"
-delcare -x SOLID_STAR="\U2605"
+declare -x SOLID_STAR="\U2605"
 
 declare -x SOLIDUS="\U29f8"
 declare -x EM_DASH="\U2014"
