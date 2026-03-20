@@ -6,13 +6,13 @@
 # This config file is for aliases only of the `ls` command
 
 unalias ls l la ll l. l.l lw lwa lww 2> /dev/null
+# do not alias ll -- it's a function
 
 _cmd=$(command -v ls)
 [[ -z $_cmd ]] && return
 
 alias l="${_cmd}   --color=auto -l"
 alias la="${_cmd}  --color=auto -lLAX"
-alias ll="${_cmd}  --color=auto -lLX"
 alias l.="${_cmd}  --color=auto -1 -d .* 2>/dev/null"
 alias l.l="${_cmd} --color=auto -1 -dl .??* 2>/dev/null"
 alias lw="${_cmd}  --color=auto -w 80"

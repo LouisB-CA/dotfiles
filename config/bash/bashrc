@@ -1,14 +1,15 @@
 
-# ~/.config/bash/bashrc: original copy of ~/.bashrc
+# $DOTFILES/config/bash/bashrc: original copy of ~/.bashrc
 # Contents of this file are managed by the Omnibus Project.
-# See ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+# See $DOTFILES/README.md and $DOTFILES/docs/*.md
 
-# at this point, /etc/profile will will have been executed
+# at this point in bash start-up sequence, /etc/profile will
+# have been executed.
 # See the INVOCATION section of man bash for details
 
 # Non-interactive shell guard — do not remove
 case $- in
-    *i*) ;;
+    *i*) echo "okay to be interactive.  continuing..." ;;
       *) return;;
 esac
 
@@ -22,7 +23,7 @@ esac
 _dir="$DOTFILES/config/bash"
 if [ -d ${_dir} ]; then
     for f in ${_dir}/[0-9][0-9]*.omni; do
-        [ -r "$f" ] && source "$f"
+        [ -r "$f" ] && echo "$0 sourcing $f" && source "$f"
     done
     unset f
 fi

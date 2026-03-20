@@ -1,0 +1,73 @@
+# ~/.functions
+# ~/.bash_function
+
+# Notes:
+#	1. the use of keyword "function" is deprecated for POSIX portability
+#	2. some of these functions are exported (to subshells) but other are not.
+#		when exporting function names, define the function first, then `export -f` the name
+#
+
+unset -f mathematica ; unalias mathematica 2> /dev/null
+mathematica() {
+    local eth_ip="ozymanidas"
+    local wifi_ip="ozymandias-alt"
+    local user="pi"
+    local target_ip=""
+    
+    # Test ethernet first (timeout after 2 seconds)
+    if ssh -o ConnectTimeout=2 -o BatchMode=yes "$user@$eth_ip" exit 2>/dev/null; then
+        target_ip="$eth_ip"
+        echo "Connecting via ethernet ($eth_ip)..."
+    # Try wifi if ethernet fails
+    elif ssh -o ConnectTimeout=2 -o BatchMode=yes "$user@$wifi_ip" exit 2>/dev/null; then
+        target_ip="$wifi_ip"
+        echo "Connecting via wifi ($wifi_ip)..."
+    else
+        echo "Error: Cannot reach RPi5 on either ethernet ($eth_ip) or wifi ($wifi_ip)" >&2
+        return 1
+    fi
+    
+    # Launch Mathematica on the reachable connection
+    waypipe ssh "$user@$target_ip" /usr/bin/mathematica "$@"
+}
+# do not export -f mathematica
+
+
+unset -f wolframscript ; unalias wolframscript 2> /dev/null
+wolframscript () {
+
+  local IMAGE="my-wolfram-14-image"
+  local CNAME="wolfboy14"
+  local CHOSTNAME="wolfboy"
+
+  # Get a disposable container running with my version of the WRI image
+  docker run --name "$CNAME" --hostname $CHOSTNAME --privileged --rm \
+         -v ~/prgms/WolframEngine:/home/louis/WolframEngine \
+         -v ~/prgms/WolframScript:/home/louis/WolframScript \
+         -v ~/.WolframEngine:/home/louis/.WolframEngine \
+         -v ~/.cache/Wolfram:/home/louis/.cache/Wolfram \
+         -v ~/.config/Wolfram:/home/louis/.config/Wolfram \
+         --user $USER -it "$IMAGE" \
+         wolframscript "$@"
+
+}
+export -f wolframscript
+
+unset -f wolfboy ; unalias wolfboy 2> /dev/null
+wolfboy() {
+    local IMAGE="my-wolfram-14-image"
+    local CNAME="wolfboy14"
+    local CHOSTNAME="wolfboy"
+    # If not running, start container in background (sleep infinity)
+    if docker ps --format '{{.Names}}' | grep -q "^${CNAME}$"; then
+        docker start "$CNAME" && \
+          docker exec -it "$CNAME" bash
+          #docker exec --user root --workdir /root -it "$CNAME" bash
+    else
+        #docker run  --rm --privileged --user root --workdir /root \
+        docker run  --rm --privileged \
+                    --name "$CNAME" -it "$IMAGE" bash
+    fi
+}
+export -f wolfboy
+

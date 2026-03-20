@@ -19,8 +19,8 @@
 _host="$(hostname -s)"
 _dir="$DOTFILES/config/bash"
 
-for f in "$_dir/${_host}"_*.omni; do
-    [ -r "$f" ] && source "$f"
+for f in "$_dir/${_host}"-*.omni; do
+    [ -r "$f" ] && echo "$0 sourcing $f" && source "$f"
 done
 
 unset _host _dir f

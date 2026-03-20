@@ -5,45 +5,347 @@
 
 # Note:  use of function keyword is deprecated for POSIX portability
 
-unset -f cd
-function cd () {
-	# keep a history of directories
-	local hnum=16;
-	local new_dir index dir cnt;
-	if ! [ $# -eq 0 ]; then
-		if [[ $# -eq 2 && $1 = "--" ]]; then
-			shift;
-		else
-			if ! { 
-				[ $# -eq 1 ] && [[ $1 =~ ^(-[0-9]{,2}|-|--|[^-].*)$ ]]
-			}; then
-				builtin cd "$@";
-				return;
-			fi;
-		fi;
-	fi;
-	[ "$1" = "--" ] && { 
-		dirs -v;
-		return
-	};
-	new_dir=${1:-$HOME};
-	if [[ "$new_dir" =~ ^-[0-9]{,2}$ ]]; then
-		index=${new_dir:1};
-		if [ -z "$index" ]; then
-			new_dir=$OLDPWD;
-		else
-			new_dir=$(dirs -l +$index) || return;
-		fi;
-	fi;
-	pushd -- "$new_dir" > /dev/null || return;
-	popd -n +$hnum &> /dev/null || true;
-	new_dir=$PWD cnt=1;
-	while dir=$(dirs -l +$cnt 2> /dev/null); do
-		if [ "$dir" = "$new_dir" ]; then
-			popd -n +$cnt > /dev/null;
-			continue;
-		fi;
-		let cnt++;
-	done
+unset -f ll ; unalias ll 2> /dev/null
+ll() {
+	## this is like the alias "la" piped through less
+	/bin/ls -lAX --color=auto $* | less
 }
+# do not export -f ll
+
+unset -f df ; unalias df 2> /dev/null
+df () {
+
+	## <!-- https://stackoverflow.com/a/56151840/5937262 -->
+	/bin/df -h $* | (sed -u 1q; grep -v loop | sort)
+
+}
+# do not export -f df (it's a shell command)
+
+
+unset -f cd ; unalias cd 2> /dev/null
+function cd () { 
+	# https://superuser.com/questions/299694/is-there-a-directory-history-for-bash
+	# Usage:    cd --    (list current history)
+	#           cd -num  (go to num directory)
+	#           cd -     (go to previous directory)
+    local hnum=16;
+    local new_dir index dir cnt;
+    if ! [ $# -eq 0 ]; then
+        if [[ $# -eq 2 && $1 = "--" ]]; then
+            shift;
+        else
+            if ! { 
+                [ $# -eq 1 ] && [[ $1 =~ ^(-[0-9]{,2}|-|--|[^-].*)$ ]]
+            }; then
+                builtin cd "$@";
+                return;
+            fi;
+        fi;
+    fi;
+    [ "$1" = "--" ] && { 
+        dirs -v;
+        return
+    };
+    new_dir=${1:-$HOME};
+    if [[ "$new_dir" =~ ^-[0-9]{,2}$ ]]; then
+        index=${new_dir:1};
+        if [ -z "$index" ]; then
+            new_dir=$OLDPWD;
+        else
+            new_dir=$(dirs -l +$index) || return;
+        fi;
+    fi;
+    pushd -- "$new_dir" > /dev/null || return;
+    popd -n +$hnum &> /dev/null || true;
+    new_dir=$PWD cnt=1;
+    while dir=$(dirs -l +$cnt 2> /dev/null); do
+        if [ "$dir" = "$new_dir" ]; then
+            popd -n +$cnt > /dev/null;
+            continue;
+        fi;
+        let cnt++;
+    done
+}
+# do not export -f cd (it's a shell command)
+
+unset -f short ; unalias short 2> /dev/null
+short () {
+    # display a short version of a text file
+    # by default, display the first 5 and the last 5 lines of a text file
+    local -i NHEAD=5
+    local -i NTAIL=5
+    if [ $# != 1 ] ; then
+        echo "Usage:  short  filename"
+    else
+        local -i KOUNT=$(wc -l $1 | cut -d' ' -f1)
+        if (( $KOUNT - $NHEAD - $NTAIL < 3 )) ; then
+            cat $1
+        else
+            head -5 $1
+            echo -e " --- skipping $((KOUNT-10)) ---"
+            tail -5 $1
+        fi
+    fi
+}
+export -f short
+
+unset -f shorten ; unalias shorten 2> /dev/null
+shorten() {
+  # similar to the `short` function, but `shorten` reads stdin
+  local USAGE="Usage: $0 [--head N] [--tail N]"
+
+  # Function to parse command line options
+  parse() {
+    local OPTIONS=$(getopt -o h:t: --long head:,tail: -- "$@")
+    if [ $? -ne 0 ]; then
+      echo "${USAGE}"
+      return 1
+    fi
+
+    eval set -- "$OPTIONS"
+
+    while true; do
+      case "$1" in
+        --head) NHEAD=$2; shift 2 ;;
+        --tail) NTAIL=$2; shift 2 ;;
+        --) shift; break ;;
+        *) echo -e "Unexpected option: $1\n${USAGE}"
+           return 1 ;;
+      esac
+    done
+  }
+
+  
+  # Function to push an item onto the stack
+  push() {
+      local item="$1"
+      stack+=("$item")  # Add the item to the end of the array
+
+      # Limit the size of the stack to 6 items (first 3 and last 3)
+      if [ ${#stack[@]} -gt $NTOTAL ]; then
+        # Remove the "middle" element (index NHEAD)
+        CHARS=$((CHARS + $(echo -n "${stack[$NHEAD]}" | wc -c)))
+        unset stack[$NHEAD]
+        SKIPPED=$((SKIPPED+1))
+        # Re-index the array to remove gaps
+        stack=("${stack[@]}")
+      fi
+  }
+
+  # Function to pop items from the stack
+  pop() {
+      if [ ${#stack[@]} -eq 0 ]; then
+        echo "Stack is empty"
+        return 3
+      fi
+
+      # Pop the first item
+      echo -e "${stack[0]}"
+      unset 'stack[0]'  # Remove the first item from the array
+      stack=("${stack[@]}")
+  }
+
+  # Function to display current stack contents for debugging
+  display_stack() {
+      echo "Current Stack: ${stack[@]}"
+  }
+
+  #############  M A I N   E N T R Y  #############
+  # Initialize an empty array to serve as the stack
+  stack=()
+
+  local -i NHEAD=3
+  local -i NTAIL=3
+  parse "$@" || return 4
+  local -i NTOTAL=$((NHEAD+NTAIL))
+  local -i SKIPPED=0
+  local -i CHARS=0
+
+  # Function to read lines from standard input and push them onto the stack
+  while IFS= read -r line; do
+    push "$line"
+  done
+
+  # Function to pop each item from the stack and send it to standard output
+  while [ ${#stack[@]} -gt $NTAIL ]; do
+    pop
+  done
+
+  echo "---------------- <skipped $SKIPPED lines, $CHARS characters> ----------------------"
+
+  while [ ${#stack[@]} -gt 0 ]; do
+    pop
+  done
+
+}
+export -f shorten
+
+unset -f npm ; unalias npm 2> /dev/null
+npm() {
+    # to grep executing npm without the -g argument
+    # Check if any argument is -g
+    if [[ " $* " == *" -g "* ]]; then
+        # Execute /usr/bin/npm with all passed arguments
+        /usr/bin/npm "$@"
+    else
+        echo "Error: The -g option is required to execute npm."
+    fi
+}
+export -f npm
+
+unset -f mount_chdir ; unalias mount_chdir 2> /dev/null
+mount_chdir() {
+  #
+  # intended to mount a removable USB device and change directory
+  # to the mounted directory.  the "chdir" means change dir
+  #
+
+  # check that there is exactly 1 argument
+  if [[ $# == 1 ]] ; then
+    local DEVICE="$1"
+  else
+    echo "$0: expected exactly 1 argument, e.g. /dev/sdh1"
+    return 1
+  fi
+
+  # check that the device exists and is a block device
+  if [[ -e $DEVICE ]] && lsblk -nd $DEVICE > /dev/null 2>&1 ; then
+    true
+  else
+    echo "$0: device $DEVICE does not exist"
+    return 2
+  fi
+
+  # check that the device is a partition
+  # expect lsblk to output either disk, part or rom
+  local DEVTYPE=$(lsblk -nd $DEVICE -o TYPE)
+  case $DEVTYPE in
+    part )
+      ## echo "$0: Okay: device has type $DEVTYPE"
+      ;;
+    disk )
+      echo "$0: device $DEVICE is a disk, not a partition"
+      return 3
+      ;;
+    rom )
+      echo "$0: device $DEVICE is a ROM device, CD/DVD perhaps"
+      return 3
+      ;;
+    * )
+      echo "$0: unrecognized device type for $DEVICE:  type is $DEVTYPE"
+      return 3
+      ;;
+  esac
+
+  # check that the device is not already mounted
+  local MNTPT="$(lsblk -nd "$DEVICE" -o MOUNTPOINT)"
+  if ! [[ -z "$MNTPT" ]] ; then
+    echo "Already mounted: changing directory to $MNTPT"
+    cd "$MNTPT"
+    return 4
+  fi
+
+  # mount the device
+  local MSG=$(udisksctl mount -b "$DEVICE")
+  local RETVAL=$?
+
+  # successful mount will give message with 4 fields
+  # unsuccessful mount will give 1 field
+  local NFIELDS=$(echo "$MSG" | awk '{print NF}')
+
+  # 4th field, if it exists, will be the mount point
+  case $NFIELDS in
+    4) local MNTPT=$(echo "$MSG" | awk '{print $4}')
+       if [[ -d $MNTPT ]] ; then
+         # echo "mount point is $MNTPT"
+         cd $MNTPT && pwd && return 0     # this is ideal, normal exit point
+       else
+         echo "$0: $MNTPT is not a directory:  this should not happen."
+       fi
+       return 5
+       ;;
+    *) echo "$MSG"
+       echo "mount failed with return value $RETVAL"
+       return 6
+       ;;
+  esac
+  return 7    # this can't happen
+}
+export -f mount_chdir
+
+unset -f lsrem ; unalias lsrem 2> /dev/null
+lsrem() {
+  # list the removable block devices by name, their type, and the current mountpoint, if any
+  lsblk --raw -o RM,NAME,TYPE,MOUNTPOINT | \
+    awk '$1==1 { printf "/dev/%-8s %-8s %-8s\n", $2, $3, $4 }'
+}
+export -f lsrem
+
+
+unset -f lsrecent ; unalias lsrecent 2> /dev/null
+lsrecent() {
+  # read the systemd journal and look for the most recent entry having
+  # the tag USB-ADDED.  this tag is used by /usr/local/sbin/usb-was-added.sh,
+  # which is triggered by a udev rule when a usb device is plugged in.
+
+  local TAG="USB-ADDED"
+
+  # read the most recent tagged entry in the systemd journal
+  ENTRY=$(journalctl -r -t "$TAG" -n 1 --output json)
+
+  if [[ -n "$ENTRY" && "$ENTRY" != "-- No entries --" ]]; then
+     # echo "$ENTRY"  # for debugging
+
+     # print the message
+     eval MSG=$(echo $ENTRY | jq .MESSAGE)
+     echo $MSG
+
+     # extract the device name.  expect e.g. /dev/sdx
+     eval DEVNAME=$(echo $ENTRY | jq .USER_DEVNAME)
+
+     # check whether block device still exists
+     if [[ -b $DEVNAME ]] ; then
+        echo
+        # for any device, list the device size, etc
+        lsblk -lpS -o NAME,SIZE,VENDOR,MODEL $DEVNAME
+
+        # if there are any partitions
+        if ls ${DEVNAME}?* 2>&1 > /dev/null ; then
+           echo
+           lsblk -lp  -o NAME,SIZE,LABEL,MOUNTPOINTS $DEVNAME?*
+        else
+           echo -e "\nNo partitions found on device $DEVNAME"
+        fi
+     else
+        echo "$DEVNAME is now invalid: unplugged?"
+     fi
+  else 
+     echo "No $TAG entry found in the systemd journal."
+     return 1
+  fi
+  return $?
+}
+export -f lsrecent
+
+unset -f hhmmss ; unalias hhmmss 2> /dev/null
+hhmmss() {
+  # convert between hh:mm:ss format and plain seconds
+  # provide either format as the argument and get the other format
+  input=$1
+  if [[ -z $input ]]; then
+    echo "Convert between HH:MM:SS and plain seconds."
+    echo "  an argument in either one format or the other is required"
+    return 1
+  fi
+  if [[ $input == *":"* ]]; then
+    # Input has colon, convert hh:mm:ss to seconds
+    seconds=$(date -d "1970-01-01 $input UTC" +%s)
+    echo $seconds
+  else
+    # Input is seconds, convert to hh:mm:ss
+    # Use -u to avoid timezone offset
+    date -u -d "@$input" +%H:%M:%S
+  fi
+}
+export -f hhmmss
 
