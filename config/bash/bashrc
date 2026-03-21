@@ -9,7 +9,8 @@
 
 # Non-interactive shell guard — do not remove
 case $- in
-    *i*) echo "okay to be interactive.  continuing..." ;;
+    *i*) # echo "okay to be interactive.  continuing..."
+         ;;
       *) return;;
 esac
 
@@ -23,7 +24,7 @@ esac
 _dir="$DOTFILES/config/bash"
 if [ -d ${_dir} ]; then
     for f in ${_dir}/[0-9][0-9]*.omni; do
-        [ -r "$f" ] && echo "$0 sourcing $f" && source "$f"
+        [ -r "$f" ] && source "$f"
     done
     unset f
 fi
