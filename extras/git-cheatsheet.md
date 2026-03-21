@@ -98,6 +98,14 @@ git pull                    # pulls changes down from GitHub
 git remote -v               # shows the GitHub URL this clone pushes/pulls to
 ```
 
+### Comparing local to remote
+```bash
+git fetch                   # fetches remote changes, without changing the local
+git diff --name-only \
+    HEAD origin/main        # files changed on the remote (available to pull)
+git status --short          # indicates all changes, those were fetched and those made locally
+```
+
 ---
 
 ## Notes on Clones and Sync
