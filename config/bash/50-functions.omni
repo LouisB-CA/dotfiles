@@ -19,7 +19,7 @@ df () {
 	/bin/df -h $* | (sed -u 1q; grep -v loop | sort)
 
 }
-# do not export -f df (it's a shell command)
+# do not export -f df (it's a utility command)
 
 
 unset -f cd ; unalias cd 2> /dev/null
