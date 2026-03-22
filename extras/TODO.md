@@ -3,9 +3,6 @@
 
 ## Priority Items
 * Gather all functions for all devices and organize them
-* Separate the 50-functions.omni into well-commented files
-  - One 52-media.omni for functions that build on ffmpeg, ffprobe, etc
-  - One 52-bash.omni for functions like cd() and snip()
 
 * Use `age-keygen` command's post-quantum encryption, when it becomes
 available on raspios 13 trixie.  `age-keygen` v 1.2.1 on raspios 13
@@ -45,6 +42,8 @@ and create a "$DOTFILES/config/git/gitconfig" with these contents
 But, this approach creates another stub that may be modified by day-to-day use of git.
 So, the user will have to remove the debris from the stub file "~/.gitconfig" 
 and put is in the project file "$DOTFILES/config/git/gitconfig"
+
+* Add the ~/.config/gh directory to the project
 
 
 ## Nice to Have
