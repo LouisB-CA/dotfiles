@@ -1,0 +1,19 @@
+
+
+unset -f monitor ; unalias monitor 2> /dev/null
+monitor () {
+	local cmd
+	case "$1" in
+	"on"  ) cmd="SWAYON"  ;;
+	"off" ) cmd="SWAYOFF" ;;
+	* )
+		echo "Usage:  monitor  on|off"
+		return 1
+		;;
+	esac
+
+	mosquitto_pub -h 192.168.12.12 \
+		-t "ozymandias/monitor" \
+		-m "$cmd"
+}
+
