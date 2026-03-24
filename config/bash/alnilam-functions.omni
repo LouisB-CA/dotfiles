@@ -42,6 +42,23 @@ cprep() {
 }
 export -f cprep
 
+unset -f vpn ; unalias vpn 2> /dev/null
+vpn() {
+	local vpnstatus=$(/usr/bin/nordvpn status)
+	local vpnsettings=$(/usr/bin/nordvpn settings)
+	while IFS= read -r line; do
+		echo "$line"
+	done <<< "$vpnstatus"
+	echo
+	while IFS= read -r line; do
+		echo "$line"
+	done <<< "$vpnsettings"
+	echo
+	while IFS= read -r line; do
+		echo "$line"
+	done <<< "$vpnstatus" | grep -E 'IP:|City:'
+}
+
 unset -f reconnect ; unalias reconnect 2> /dev/null
 reconnect() {
     # reconnect nordvpn to the same server

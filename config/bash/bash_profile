@@ -7,10 +7,14 @@
 
 # For non-login, interactive shells, .bashrc is run, if it exists.
 
-# determine whether invoked by SSHD, run .bashrc if yes
-if [ "x$(ps --pid=$PPID -ocmd | tail -1 | cut -c1-4)" == xsshd ] ; then
+# Determine how this shell was invoked
+recent="$(ps --pid=$PPID -ocmd | tail -1)"
+
+# When invoked by SSHD or by sudo -i, run .bashrc
+if [ "x${recent:0:4}" == xsshd ] || [ "x${recent:0:7}" == "xsudo -i" ] ; then
     if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
 fi
+unset recent
 
 #=!=!=!=!=! DO NOT EDIT ABOVE THIS LINE.  BELOW THIS, IT'S UNMANAGED
 
