@@ -27,8 +27,10 @@ old_method() {
 # public key: age1fevjvtxs2mft3xf8me6hxc2e52rf99k53crqpem7xurfehpdp9hq8fxthc
 echo "Encrypting ${IN_FILE}"
 age --encrypt                                                           \
-    -r age1fevjvtxs2mft3xf8me6hxc2e52rf99k53crqpem7xurfehpdp9hq8fxthc   \
+    -r age1c0jzshs9qe9hewynveyutngvh4lkvcg5l3er3agvn84dcjyn2yysxnkm5a   \
     -o "${IN_FILE}.age"                                                 \
     "${IN_FILE}"
+
+
 
 
