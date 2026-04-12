@@ -1,6 +1,6 @@
 
 # Sharing ID's and Config
-## Only the *~/.ssh/config* file is eligible
+## Only the *~/.ssh/config* file is eligible for the Omnibus Project
 * Public and private SSH keys should not be put in a *git* repository
 * *known_hosts* and *authorization_keys* are host-specific
 

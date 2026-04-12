@@ -5,6 +5,10 @@
 
 # Note:  use of function keyword is deprecated for POSIX portability
 
+# DO NOT EXPORT -- if you need these functions in a script or something,
+#                  you can always just source this script, or 
+#                  source ~/.bashrc in your script
+
 unset -f rvbfunc ; unalias rvbfunc 2> /dev/null
 rvbfunc() { 
 	# Reduce Video Better -- try to reduce the size of a video file
@@ -50,4 +54,45 @@ rvbfunc() {
 		ffmpeg -i "$1" -c:v libx265 -crf 28 -c:a copy -y "$OUTFILE"
 	fi
 }
+# do not export -f rvbfunc
+
+unset -f duration ; unalias duration 2> /dev/null
+duration () {
+    local h m s
+    local duration=$(ffmpeg -i "$1" 2>&1 | grep "Duration" | awk '{print $2}' | tr -d ',')
+    IFS=: read h m s <<< "$duration"
+    local total=$(echo "scale=2 ; $h * 60 + $m + $s / 60" | bc)
+    echo "$total minutes"
+}
+# do not export -f duration
+
+
+unset -f ffnorm ; unalias ffnorm 2> /dev/null
+ffnorm() {
+	# Use ffmpeg-normalize to normalize the audio of a video
+	# https://superuser.com/questions/323119/how-can-i-normalize-audio-using-ffmpeg
+	local input_file="$1"
+	[ -z "$input_file" ] && echo "Usage:  ffnorm  filename" && return
+	[ -f "$input_file" ] || echo "File not found: $input_file" && return
+	echo -e "\n$input_file"
+
+	local FFOPTS=" "
+	FFOPTS+=" -c:a aac -b:a 192k"
+	FFOPTS+=" --normalization-type peak --target-level 0 -f"
+	FFOPTS+=" --output-folder ./Normalized"
+	/usr/bin/ffmpeg-normalize $FFOPTS "$input_file"
+
+}
+# do not export -f ffnorm
+
+unset -f duration ; unalias duration 2> /dev/null
+duration () {
+    local h m s
+    local duration=$(ffmpeg -i "$1" 2>&1 | grep "Duration" | awk '{print $2}' | tr -d ',')
+    IFS=: read h m s <<< "$duration"
+    local total=$(echo "scale=2 ; $h * 60 + $m + $s / 60" | bc)
+    echo "$total minutes"
+}
+export -f duration
+
 

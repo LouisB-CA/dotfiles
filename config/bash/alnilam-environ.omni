@@ -1,0 +1,10 @@
+
+# these environment variables apply only to hostname alnilam
+
+# export BOOST_ROOT=$(ls -d1 /usr/local/boost* | sort | tail -1)
+# export ELECTRON_DISABLE_GPU=1
+export GOCOVERDIR=/tmp/nordvpn-junk         # NordVPN uses this
+export NODE_PATH=$(/usr/bin/npm root -g)    # Node.js needs this to find packages/modules
+export SCIHOME=$HOME/prgms/Scilab
+export VLINKS=/mnt/8TBeta/Videos/Video_links
+
