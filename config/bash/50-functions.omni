@@ -5,6 +5,21 @@
 
 # Note:  use of function keyword is deprecated for POSIX portability
 
+unset -f chtabs ; unalias chtabs 2> /dev/null
+chtabs() {
+	if [[ -z "$1" ]] ; then
+		# with no argument --  either print env var TABSIZE or no action
+		if ! [[ -z "$TABSIZE" ]] ; then
+			echo "chtabs: $TABSIZE"
+		fi
+	else
+		# with argument -- change the tab settings and update the environment variable
+		TABSIZE=$1
+		/usr/bin/tabs -$TABSIZE
+	fi
+}
+# do not export -f chtabs (not needed in scripts or subshells)
+
 unset -f ll ; unalias ll 2> /dev/null
 ll() {
 	## this is like the alias "la" piped through less
@@ -17,6 +32,11 @@ lp() {
 	ls -l "$@" | awk \
 		'!/^total/ {perm=$1; $1=$2=$3=$4=$5=$6=$7=$8=""; print perm, $0}' | \
 		sed 's/  */    /'
+}
+
+unset -f ls ; unalias ls 2> /dev/null
+ls() {
+	/usr/bin/ls -T${TABSIZE:-4} $@
 }
 
 unset -f lp ; unalias lp 2> /dev/null

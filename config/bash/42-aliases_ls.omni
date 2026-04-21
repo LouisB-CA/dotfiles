@@ -8,6 +8,7 @@
 unalias ls l la ll l. l.l lw lwa lww 2> /dev/null
 # do not alias ll -- it's a function
 # do not alias lp -- it's a function
+# do not alias ls -- it may be a function
 
 _cmd=$(command -v ls)
 [[ -z $_cmd ]] && return

@@ -1,0 +1,8 @@
+
+# ~/.config/bash/99-fin.omni: sourced by ~/.bashrc
+# Contents of this file are managed by the Omnibus Project
+# see ~/.config/bash/README.md and ~/.config/bash/docs/*.md
+
+chtabs 4		# change the tab settings
+
+
