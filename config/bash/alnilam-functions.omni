@@ -8,10 +8,34 @@
 #
 
 unset -f lochowto ; unalias lochowto 2> /dev/null
-lochowto () {
+lochowto() {
+    local no_videos=0
+    local args=()
 
-	[ $# == 0 ] || lc 'how.to|usernote|llm.chat' | grep -i $*
+    # Parse arguments
+    for arg in "$@"; do
+        case "$arg" in
+            --no-videos)
+                no_videos=1
+                ;;
+            *)
+                args+=("$arg")
+                ;;
+        esac
+    done
 
+    local pattern="${args[0]}"
+
+    # Build the find command
+    local results
+    results=$(lc 'how.to|usernote|llm.chat|/workflows/' | grep -i $pattern)
+
+    # Filter out video files if requested
+    if [[ $no_videos -eq 1 ]]; then
+        results=$(echo "$results" | grep -Eiv '\.(avi|mp4|mkv|vtt|mov|wmv|flv|webm)$')
+    fi
+
+    echo "$results"
 }
 # do not export -f lochowto
 
