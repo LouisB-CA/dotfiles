@@ -28,7 +28,7 @@ lochowto() {
 
     # Build the find command
     local results
-    results=$(lc 'how.to|usernote|llm.chat|/workflows/' | grep -i $pattern)
+    results=$(lc 'how.to|usernote|llm.chat|/workflows/' | grep -i $pattern | grep -vE workflows/.*\.ya?ml$ )
 
     # Filter out video files if requested
     if [[ $no_videos -eq 1 ]]; then

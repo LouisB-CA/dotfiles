@@ -22,15 +22,13 @@ old_method() {
 }
 
 # SUPERSEDES the old_method()
-# This method uses the public key found in the
-# omnibus.ident file stored in the BitWarden vault.
+# This method uses the public key found in the omnibus.ident file 
+# stored in the BitWarden vault.  Look for the wifi subnet name.
 # public key: age1fevjvtxs2mft3xf8me6hxc2e52rf99k53crqpem7xurfehpdp9hq8fxthc
 echo "Encrypting ${IN_FILE}"
 age --encrypt                                                           \
-    -r age1c0jzshs9qe9hewynveyutngvh4lkvcg5l3er3agvn84dcjyn2yysxnkm5a   \
+    -r age1fevjvtxs2mft3xf8me6hxc2e52rf99k53crqpem7xurfehpdp9hq8fxthc   \
     -o "${IN_FILE}.age"                                                 \
     "${IN_FILE}"
-
-
 
 
