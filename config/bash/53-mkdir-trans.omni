@@ -1,0 +1,247 @@
+#!/usr/bin/env bash
+# =============================================================================
+# mkdir-trans  —  create a self-removing transient directory under /tmp
+#
+# USAGE:
+#   source mkdir-trans.sh
+#   mkdir-trans /tmp/DIRNAME [--timeout=DURATION]
+#
+# DURATION examples:  60m (default), 2h, 3600s
+#
+# The directory is monitored for file access via inotify.  If no file in the
+# directory tree is accessed for DURATION, the entire directory is removed.
+# Any access resets the countdown.
+#
+# The directory is also naturally removed on reboot (lives under /tmp).
+#
+# REQUIREMENTS:
+#   inotify-tools  (sudo apt install inotify-tools)
+#
+# DO NOT run as root.
+# =============================================================================
+# written by Claude 4.6, 2026-05-21
+# =============================================================================
+
+unset -f mkdir-trans ; unalias mkdir-trans 2> /dev/null
+mkdir-trans() {
+
+    # -------------------------------------------------------------------------
+    # 1. Must not be root
+    # -------------------------------------------------------------------------
+    if [[ $EUID -eq 0 ]]; then
+        echo "mkdir-trans: error: must not be run as root." >&2
+        return 1
+    fi
+
+    # -------------------------------------------------------------------------
+    # 2. At least one argument required
+    # -------------------------------------------------------------------------
+    if [[ $# -lt 1 ]]; then
+        echo "mkdir-trans: error: missing required argument DIRNAME." >&2
+        echo "usage: mkdir-trans /tmp/DIRNAME [--timeout=60m]" >&2
+        return 1
+    fi
+
+    # -------------------------------------------------------------------------
+    # 3. Parse arguments
+    # -------------------------------------------------------------------------
+    local target_dir=""
+    local timeout_raw="60m"   # default
+
+    for arg in "$@"; do
+        case "$arg" in
+            --timeout=*)
+                timeout_raw="${arg#--timeout=}"
+                ;;
+            --*)
+                echo "mkdir-trans: error: unknown option '$arg'." >&2
+                return 1
+                ;;
+            *)
+                if [[ -n "$target_dir" ]]; then
+                    echo "mkdir-trans: error: unexpected extra argument '$arg'." >&2
+                    return 1
+                fi
+                target_dir="$arg"
+                ;;
+        esac
+    done
+
+    # -------------------------------------------------------------------------
+    # 4. Validate timeout format  (digits followed by s, m, or h)
+    # -------------------------------------------------------------------------
+    if [[ ! "$timeout_raw" =~ ^[0-9]+[smh]$ ]]; then
+        echo "mkdir-trans: error: invalid timeout '$timeout_raw'." >&2
+        echo "  Use a number followed by s, m, or h  (e.g. 60m, 2h, 3600s)." >&2
+        return 1
+    fi
+
+    # Convert timeout to seconds for internal use
+    local timeout_secs
+    local timeout_num="${timeout_raw%[smh]}"
+    local timeout_unit="${timeout_raw: -1}"
+    case "$timeout_unit" in
+        s) timeout_secs=$(( timeout_num )) ;;
+        m) timeout_secs=$(( timeout_num * 60 )) ;;
+        h) timeout_secs=$(( timeout_num * 3600 )) ;;
+    esac
+
+    # -------------------------------------------------------------------------
+    # 5. Validate target path
+    #    - Must start with /tmp/
+    #    - Must not be /tmp/ itself
+    #    - Resolve and re-check to catch symlinks / .. tricks
+    #    - Must not already exist
+    # -------------------------------------------------------------------------
+
+    # Reject if it doesn't start with /tmp/
+    if [[ "$target_dir" != /tmp/* ]]; then
+        echo "mkdir-trans: error: path must begin with /tmp/  (got '$target_dir')." >&2
+        return 1
+    fi
+
+    # Reject bare /tmp/ or /tmp with nothing after it
+    local after_tmp="${target_dir#/tmp/}"
+    if [[ -z "$after_tmp" ]]; then
+        echo "mkdir-trans: error: path must be a directory inside /tmp, not /tmp itself." >&2
+        return 1
+    fi
+
+    # Reject path traversal attempts (any component that is "..")
+    if [[ "$target_dir" =~ (^|/)\.\.(|/) ]]; then
+        echo "mkdir-trans: error: path must not contain '..' components." >&2
+        return 1
+    fi
+
+    # Strip trailing slash for consistency
+    target_dir="${target_dir%/}"
+
+    # After stripping, re-check it still starts with /tmp/
+    if [[ "$target_dir" != /tmp/* ]]; then
+        echo "mkdir-trans: error: path resolves outside /tmp." >&2
+        return 1
+    fi
+
+    # Must not already exist
+    if [[ -e "$target_dir" ]]; then
+        echo "mkdir-trans: error: '$target_dir' already exists." >&2
+        return 1
+    fi
+
+    # -------------------------------------------------------------------------
+    # 6. inotifywait must be installed
+    # -------------------------------------------------------------------------
+    if ! command -v inotifywait &>/dev/null; then
+        echo "mkdir-trans: error: inotifywait not found." >&2
+        echo "  Install it with:  sudo apt install inotify-tools" >&2
+        return 1
+    fi
+
+    # -------------------------------------------------------------------------
+    # 7. Create the directory, lock down permissions
+    # -------------------------------------------------------------------------
+    if ! mkdir -p "$target_dir"; then
+        echo "mkdir-trans: error: could not create '$target_dir'." >&2
+        return 1
+    fi
+    chmod 700 "$target_dir"
+
+    # Drop marker files so backup tools skip this directory
+    touch "$target_dir/.nobackup"
+    printf 'Signature: 8a477f597d28d172789f06886806bc55\n' \
+        > "$target_dir/CACHEDIR.TAG"
+
+    # -------------------------------------------------------------------------
+    # 8. State file lives outside the watched directory so accessing it
+    #    does not reset the countdown.
+    #    Location: /tmp/.transientdir-<sanitised-basename>.pid
+    # -------------------------------------------------------------------------
+    local dir_base
+    dir_base="$(basename "$target_dir")"
+    local state_file="/tmp/.transientdir-${dir_base}.pid"
+
+    # -------------------------------------------------------------------------
+    # 9. Spawn the background monitor (detached from terminal)
+    # -------------------------------------------------------------------------
+    (
+        # --- monitor subprocess -------------------------------------------
+
+        # Write our PID to the state file so the user can find / kill us.
+        echo $$ > "$state_file"
+
+        # Cleanup helper: remove directory and state file, then exit.
+        _cleanup() {
+            rm -rf "$target_dir"
+            rm -f  "$state_file"
+            exit 0
+        }
+
+        # If someone removes the directory manually, stop the monitor.
+        _check_dir_exists() {
+            if [[ ! -d "$target_dir" ]]; then
+                rm -f "$state_file"
+                exit 0
+            fi
+        }
+
+        # inotifywait events that indicate real human access.
+        # OPEN covers reads; CLOSE_WRITE covers edits.
+        # We exclude the marker files we placed so they never reset the timer.
+        local events="open,access,close_write,close_nowrite"
+
+        # Run inotifywait in --monitor mode (never exits on its own) and
+        # pipe each event line into our read loop.  We use a 1-second timeout
+        # on 'read' so we can check the countdown even when nothing is happening.
+
+        local last_access=$SECONDS   # bash built-in: seconds since shell start
+
+        inotifywait \
+            --recursive \
+            --monitor \
+            --quiet \
+            --format '%f' \
+            --event "$events" \
+            --exclude '\.(nobackup)$|^CACHEDIR\.TAG$' \
+            "$target_dir" 2>/dev/null |
+
+        while true; do
+            _check_dir_exists
+
+            # Try to read a line from inotifywait with a 1-second timeout.
+            local line
+            if IFS= read -r -t 1 line <&0; then
+                # An access event arrived — reset the countdown.
+                last_access=$SECONDS
+            fi
+
+            # Check whether the idle window has elapsed.
+            local idle=$(( SECONDS - last_access ))
+            if (( idle >= timeout_secs )); then
+                _cleanup
+            fi
+        done
+
+    ) &>/tmp/.transientdir-"${dir_base}".log </dev/null &
+
+    disown $!
+
+    # Give the subprocess a moment to write its PID file.
+    local waited=0
+    local max_wait=5  # seconds before giving up
+    while [[ ! -s "$state_file" ]] && (( waited < max_wait )); do
+        sleep 0.1
+        (( waited++ )) || true
+    done
+
+    if [[ ! -s "$state_file" ]]; then
+        echo "mkdir-trans: warning: monitor may not have started (no PID file after ${max_wait}s)." >&2
+    fi
+
+    echo "mkdir-trans: created '$target_dir' (timeout: ${timeout_raw})."
+    echo "  Monitor PID : $(cat "$state_file" 2>/dev/null || echo 'unknown')"
+    echo "  Log         : /tmp/.transientdir-${dir_base}.log"
+    echo "  State file  : $state_file"
+    echo "  To cancel   : kill \$(cat $state_file) && rm -rf $target_dir"
+
+    return 0
+}
