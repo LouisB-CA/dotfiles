@@ -45,12 +45,11 @@ and put is in the project file "$DOTFILES/config/git/gitconfig"
 
 * Add the ~/.config/gh directory to the project
 
+* Document how to (1) use mkdir-trans function, (2) create /tmp/omnibus/omnibus.ident, and
+<br>(3) decrypt the $DOTFILES/ssh/config.age file
+
 
 ## Nice to Have
-
-* test installer.sh runs as either plain user or superuser
-* clean up dead code in 60-prompts.omni.
-<br>only the last value of PS1 should be retained.
 
 * useful git commands / cheatsheet for maintaining this project
 

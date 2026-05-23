@@ -15,7 +15,7 @@
 * Stub files are installed once in the user's home directory
 * An installer script is provided to facilitate installation
 * *install.sh* will overwrite existing files of the same name
-* *install.sh* may be run by either a plain user or the superuser
+* *install.sh* must be run by the superuser
 
 ## Changing Your System Configuration
 * If you need to change a configuration, you are in the wrong place!
