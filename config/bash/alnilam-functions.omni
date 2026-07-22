@@ -92,3 +92,49 @@ reconnect() {
 }
 
 
+unset -f yt-dlp ; unalias yt-dlp 2> /dev/null
+yt-dlp() {
+    local bin="$HOME/prgms/yt-dlp/.venv/bin/yt-dlp"
+    local setup="$HOME/prgms/yt-dlp/setup.sh"
+
+    if [ -x "$bin" ]; then
+        "$bin" "$@"
+        return $?
+    fi
+
+    if [ ! -x "$setup" ]; then
+        echo "yt-dlp: setup.sh not found or not executable at $setup" >&2
+        return 1
+    fi
+
+    if [ -t 0 ]; then
+        local reply
+        read -r -p "yt-dlp not found. Run setup.sh ($setup)? [y/N] " reply
+        case "$reply" in
+            [yY]|[yY][eE][sS]) ;;
+            *)
+                echo "yt-dlp: setup declined by user" >&2
+                return 2
+                ;;
+        esac
+    else
+        echo "yt-dlp: not found and not running interactively, won't prompt to run setup.sh" >&2
+        return 3
+    fi
+
+    "$setup"
+
+    if [ ! -e "$bin" ]; then
+        echo "yt-dlp: still missing after setup.sh: $bin" >&2
+        return 4
+    fi
+
+    if [ ! -x "$bin" ]; then
+        echo "yt-dlp: exists but not executable after setup.sh: $bin" >&2
+        return 5
+    fi
+
+    "$bin" "$@"
+    return $?
+}
+export -f yt-dlp
