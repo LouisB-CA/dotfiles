@@ -363,23 +363,90 @@ export -f lsrecent
 
 unset -f hhmmss ; unalias hhmmss 2> /dev/null
 hhmmss() {
-  # convert between hh:mm:ss format and plain seconds
-  # provide either format as the argument and get the other format
-  input=$1
-  if [[ -z $input ]]; then
-    echo "Convert between HH:MM:SS and plain seconds."
-    echo "  an argument in either one format or the other is required"
-    return 1
-  fi
-  if [[ $input == *":"* ]]; then
-    # Input has colon, convert hh:mm:ss to seconds
-    seconds=$(date -d "1970-01-01 $input UTC" +%s)
-    echo $seconds
-  else
-    # Input is seconds, convert to hh:mm:ss
-    # Use -u to avoid timezone offset
-    date -u -d "@$input" +%H:%M:%S
-  fi
+    # convert between hh:mm:ss format and plain seconds
+    # provide either format as the argument and get the other format
+    if (( $# != 1 )); then
+        printf 'Usage: hhmmss SECONDS | [DAYS-]HH:MM:SS\n' >&2
+        return 2
+    fi
+
+    local value=$1
+    local days hours minutes seconds total
+
+    if [[ $value == *:* ]]; then
+        # Input: HH:MM:SS or DAYS-HH:MM:SS
+        if [[ $value =~ ^([0-9]+-)?([0-9]{1,2}):([0-9]{2}):([0-9]{2})$ ]]; then
+            days=${BASH_REMATCH[1]%-}
+            hours=${BASH_REMATCH[2]}
+            minutes=${BASH_REMATCH[3]}
+            seconds=${BASH_REMATCH[4]}
+
+            # Avoid Bash treating leading-zero fields as octal.
+            days=${days:-0}
+            total=$(( 10#$days * 86400 + 10#$hours * 3600 + 10#$minutes * 60 + 10#$seconds ))
+
+            printf '%d\n' "$total"
+        else
+            printf 'Invalid time: %q\nExpected [DAYS-]HH:MM:SS\n' "$value" >&2
+            return 2
+        fi
+    else
+        # Input: total seconds
+        if [[ ! $value =~ ^[0-9]+$ ]]; then
+            printf 'Invalid seconds value: %q\n' "$value" >&2
+            return 2
+        fi
+
+        total=$((10#$value))
+        days=$((total / 86400))
+        total=$((total % 86400))
+        hours=$((total / 3600))
+        total=$((total % 3600))
+        minutes=$((total / 60))
+        seconds=$((total % 60))
+
+        if (( days > 0 )); then
+            printf '%d-%02d:%02d:%02d\n' \
+                "$days" "$hours" "$minutes" "$seconds"
+        else
+            printf '%02d:%02d:%02d\n' \
+                "$hours" "$minutes" "$seconds"
+        fi
+    fi
 }
 export -f hhmmss
+
+unset -f print_env ; unalias print_env 2> /dev/null
+print_env() {
+    # print list of all current environment variables or all the current function definitions
+    if [[ $# -eq 1 && "$1" == "-v" ]]; then
+        # print all lines up to the first BASH_FUNC + print the last line
+        /usr/bin/printenv | awk '/^BASH_FUNC/{exit} {print}' | sort
+        /usr/bin/printenv | tail -1
+    elif [[ $# -eq 1 && "$1" == "-f" ]]; then
+        # print all lines beginning with the first BASH_FUNC but skip the last line
+        /usr/bin/printenv | awk '/^BASH_FUNC/{found=1} found{print}' | head --lines=-1
+    elif [[ $# -eq 1 && "$1" == "-h" ]]; then
+        echo "Usage:  print-env [ -v | -f | -h ]"
+        echo "                  -v   prints environment variables"
+        echo "                  -f   prints bash functions"
+        echo "                  -h   prints this help message"
+        echo "                  anything else executes /usr/bin/printenv with any given arguments"
+    else
+        /usr/bin/printenv "$@"
+    fi
+}
+# do not export -f print_env
+
+unset -f get_extension ; unalias get_extension 2> /dev/null
+get_extension() {
+    local filename="$1"
+    if [[ "$filename" == *.* ]]; then
+        echo "${filename##*.}"
+    else
+        echo ""
+    fi
+}
+# do not export -f get_extension
+
 
