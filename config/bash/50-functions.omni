@@ -416,6 +416,32 @@ hhmmss() {
 }
 export -f hhmmss
 
+unset -f sourcery ; unalias sourcery 2> /dev/null
+sourcery() {
+    # source a file that may be in a parent directory
+    # typical use case is to source a file that sets project or system environment variables
+    # default file to source is the project.env file
+    if [[ $# -ne 1 ]]; then
+        echo "usage: sourcery <filename>" >&2
+        return 2
+    fi
+
+    local target="$1"
+    local dir="$PWD"
+
+    while [[ ! -f "$dir/$target" ]]; do
+        if [[ "$dir" == "/" ]]; then
+            echo "sourcery: $target not found (searched up to /)" >&2
+            return 1
+        fi
+        dir="$(dirname "$dir")"
+    done
+
+    source "$dir/$target"
+}
+export -f sourcery
+
+
 unset -f print_env ; unalias print_env 2> /dev/null
 print_env() {
     # print list of all current environment variables or all the current function definitions
