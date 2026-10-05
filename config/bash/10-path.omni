@@ -13,3 +13,8 @@ export PATH
 # This line removes the references to "games" directories in the PATH
 PATH=$(echo "$PATH" | tr ':' '\n' | grep -v 'games' | tr '\n' ':' | sed 's/:$//')
 
+# This section looks for the Lean 4 programming language installation
+# Note this assumes ELAN_HOME will be set to ~/.elan in a later script
+[[ -d $HOME/.elan/bin && ":$PATH:" != *":$HOME/.elan/bin:"* ]] \
+	&& PATH="$HOME/.elan/bin:$PATH"
+
