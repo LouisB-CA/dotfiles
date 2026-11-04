@@ -30,6 +30,9 @@ export LESS="-R --quit-if-one-screen"
 # tell pip not to run outside of a virtual environment
 export PIP_REQUIRE_VIRTUALENV=true
 
+# tell systemd which edit to use
+export SYSTEMD_EDITOR=/usr/bin/vim
+
 # used by the chtabs() function
 TABSIZE=4
 
