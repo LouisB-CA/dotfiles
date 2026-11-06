@@ -94,8 +94,8 @@ reconnect() {
 
 unset -f yt-dlp ; unalias yt-dlp 2> /dev/null
 yt-dlp() {
-    local bin="$HOME/prgms/yt-dlp/.venv/bin/yt-dlp"
-    local setup="$HOME/prgms/yt-dlp/setup.sh"
+    local bin="$HOME/prgms/Python/yt-dlp/.venv/bin/yt-dlp"
+    local setup="$HOME/prgms/Python/yt-dlp/setup.sh"
 
     if [ -x "$bin" ]; then
         "$bin" "$@"
