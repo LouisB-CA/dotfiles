@@ -1,0 +1,17 @@
+# ~/.functions
+# ~/.bash_function
+
+# Notes:
+#	1. the use of keyword "function" is deprecated for POSIX portability
+#	2. some of these functions are exported (to subshells) but other are not.
+#		when exporting function names, define the function first, then `export -f` the name
+#
+
+unset -f find ; unalias find 2> /dev/null
+find() {
+	# on the uno-q, find often emits a harmless error message.  this function
+	# filters the error message from the output of find
+    command find "$@" 2> >(grep -v "find: ‘./lost+found’: Permission denied" >&2);
+}
+# do not export -f find
+
